@@ -1,7 +1,10 @@
 package com.HospitalManagement.service;
 
+import com.HospitalManagement.dto.DoctorDTO;
 import com.HospitalManagement.entity.Doctor;
+import com.HospitalManagement.entity.Specialization;
 import com.HospitalManagement.exception.DoctorNotFoundException;
+import com.HospitalManagement.mapper.DoctorMapper;
 import com.HospitalManagement.repository.DoctorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +28,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Page<Doctor> getAllDoctor(Pageable pageable) {
-        return doctorRepository.findAll(pageable);
+        return doctorRepository.findByActiveTrue(pageable);
     }
 
     @Override
@@ -47,6 +50,15 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public void deleteDoctor(Long id) {
         Doctor existing = getDoctorById(id);
-        doctorRepository.delete(existing);
+        existing.setActive(false);
+        doctorRepository.save(existing);
+    }
+
+
+    public Page<DoctorDTO> getDoctorsBySpecialization(Specialization specialization, Pageable pageable)
+    {
+        return doctorRepository
+                .findBySpecialization(specialization, pageable)
+                .map(DoctorMapper::toDTO);
     }
 }

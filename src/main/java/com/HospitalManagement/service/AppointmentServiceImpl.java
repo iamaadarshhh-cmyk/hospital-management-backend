@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
 
@@ -33,7 +35,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Page<AppointmentDTO> getAllAppointments(Pageable pageable) {
-        return appointmentRepository.findAll(pageable)
+        return appointmentRepository.findByActiveTrue(pageable)
                 .map(appointmentMapper::toDTO);
     }
 
@@ -58,6 +60,17 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void deleteAppointment(Long id) {
-        appointmentRepository.deleteById(id);
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        appointment.setActive(false);
+        appointmentRepository.save(appointment);
+    }
+
+    @Override
+    public Page<AppointmentDTO> getAppointmentByDate(LocalDate date, Pageable pageable) {
+        return appointmentRepository
+                .findByDate(date,pageable)
+                .map(appointmentMapper::toDTO);
     }
 }

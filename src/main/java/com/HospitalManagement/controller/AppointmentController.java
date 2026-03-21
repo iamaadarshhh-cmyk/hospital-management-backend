@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping("/appointments")
 public class AppointmentController {
@@ -23,7 +25,9 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public Page<AppointmentDTO> getAllAppointments(Pageable pageable) {
+    public Page<AppointmentDTO> getAppointments(@RequestParam(required = false) LocalDate date, Pageable pageable) {
+        if(date != null)
+            return appointmentService.getAppointmentByDate(date,pageable);
         return appointmentService.getAllAppointments(pageable);
     }
 

@@ -29,7 +29,10 @@ public class PatientController {
     }
 
     @GetMapping
-    public Page<PatientDTO> getAllPatients(Pageable pageable) {
+    public Page<PatientDTO> getPatients(@RequestParam(required = false) String name, Pageable pageable) {
+        if(name != null){
+            return patientService.getPatientByName(name,pageable);
+        }
 
         return patientService.getAllPatients(pageable)
                 .map(PatientMapper::toDTO);

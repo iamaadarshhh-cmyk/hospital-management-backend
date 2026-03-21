@@ -5,6 +5,8 @@ import com.HospitalManagement.entity.Appointment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDate;
+
 
 public interface AppointmentService {
     AppointmentDTO addAppointment(AppointmentDTO dto);
@@ -17,4 +19,5 @@ public interface AppointmentService {
 
     void deleteAppointment(Long id);
 
+    Page<AppointmentDTO> getAppointmentByDate(LocalDate date, Pageable pageable);
 }

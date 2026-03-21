@@ -1,11 +1,10 @@
 package com.HospitalManagement.controller;
 
 import com.HospitalManagement.dto.DoctorDTO;
-import com.HospitalManagement.dto.PatientDTO;
+
 import com.HospitalManagement.entity.Doctor;
-import com.HospitalManagement.entity.Patient;
+import com.HospitalManagement.entity.Specialization;
 import com.HospitalManagement.mapper.DoctorMapper;
-import com.HospitalManagement.mapper.PatientMapper;
 import com.HospitalManagement.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -29,8 +28,12 @@ public class DoctorController {
     }
 
     @GetMapping
-    public Page<DoctorDTO> getAllDoctor(Pageable pageable) {
+    public Page<DoctorDTO> getDoctors(@RequestParam(required = false) Specialization specialization, Pageable pageable) {
 
+        if(specialization != null)
+        {
+            return doctorService.getDoctorsBySpecialization(specialization, pageable);
+        }
         return doctorService.getAllDoctor(pageable)
                 .map(DoctorMapper::toDTO);
     }

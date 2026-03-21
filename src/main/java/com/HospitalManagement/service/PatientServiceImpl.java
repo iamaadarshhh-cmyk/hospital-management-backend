@@ -1,7 +1,9 @@
 package com.HospitalManagement.service;
 
+import com.HospitalManagement.dto.PatientDTO;
 import com.HospitalManagement.entity.Patient;
 import com.HospitalManagement.exception.PatientNotFoundException;
+import com.HospitalManagement.mapper.PatientMapper;
 import com.HospitalManagement.repository.PatientRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,13 +27,18 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public Page<Patient> getAllPatients(Pageable pageable) {
-        return patientRepository.findAll(pageable);
+        return patientRepository.findByActiveTrue(pageable);
     }
 
     @Override
     public Patient getPatientById(Long id) {
-        return patientRepository.findById(id)
-                .orElseThrow(() ->  new PatientNotFoundException("Patient not found with id " + id));
+        Patient patient = patientRepository.findById(id)
+                .orElseThrow(() -> new PatientNotFoundException("Patient not found with id " + id));
+        if(!patient.isActive())
+        {
+            throw new PatientNotFoundException("Patient not found");
+        }
+        return patient;
     }
 
     @Override
@@ -47,6 +54,15 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public void deletePatient(Long id) {
-        patientRepository.deleteById(id);
+        Patient patient = getPatientById(id);
+        patient.setActive(false);
+        patientRepository.save(patient);
+    }
+
+    @Override
+    public Page<PatientDTO> getPatientByName(String name, Pageable pageable) {
+        return patientRepository
+                .findByNameContainingIgnoreCase(name,pageable)
+                .map(PatientMapper::toDTO);
     }
 }

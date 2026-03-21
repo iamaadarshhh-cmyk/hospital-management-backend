@@ -1,5 +1,6 @@
 package com.HospitalManagement.service;
 
+import com.HospitalManagement.dto.PatientDTO;
 import com.HospitalManagement.entity.Patient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,4 +20,5 @@ public interface PatientService {
     void deletePatient(Long id);
 
 
+    Page<PatientDTO> getPatientByName(String name, Pageable pageable);
 }
