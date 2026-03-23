@@ -7,6 +7,7 @@ import com.HospitalManagement.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class PatientController {
         this.patientService = patientService;
     }
 
+    @PreAuthorize("hasRole('PATIENT')")
     @PostMapping
     public PatientDTO addPatient(@Valid @RequestBody PatientDTO dto){
         Patient patient = PatientMapper.toEntity(dto);
@@ -28,6 +30,7 @@ public class PatientController {
         return PatientMapper.toDTO(savedPatient);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public Page<PatientDTO> getPatients(@RequestParam(required = false) String name, Pageable pageable) {
         if(name != null){
@@ -38,7 +41,7 @@ public class PatientController {
                 .map(PatientMapper::toDTO);
     }
 
-
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping("/{id}")
     public PatientDTO getPatient(@PathVariable Long id) {
 
@@ -60,6 +63,7 @@ public class PatientController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);

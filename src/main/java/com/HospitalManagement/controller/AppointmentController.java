@@ -5,6 +5,7 @@ import com.HospitalManagement.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class AppointmentController {
         return appointmentService.addAppointment(dto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping
     public Page<AppointmentDTO> getAppointments(@RequestParam(required = false) LocalDate date, Pageable pageable) {
         if(date != null)
@@ -31,6 +33,7 @@ public class AppointmentController {
         return appointmentService.getAllAppointments(pageable);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping("/{id}")
     public AppointmentDTO getAppointment(@PathVariable Long id) {
         return appointmentService.getAppointmentById(id);

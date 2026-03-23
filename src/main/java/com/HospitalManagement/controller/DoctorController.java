@@ -9,6 +9,7 @@ import com.HospitalManagement.service.DoctorService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,6 +21,7 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public DoctorDTO addDoctor(@Valid @RequestBody DoctorDTO dto){
         Doctor doctor = DoctorMapper.toEntity(dto);
@@ -27,6 +29,8 @@ public class DoctorController {
         return DoctorMapper.toDTO(savedDoctor);
     }
 
+
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping
     public Page<DoctorDTO> getDoctors(@RequestParam(required = false) Specialization specialization, Pageable pageable) {
 
@@ -39,6 +43,7 @@ public class DoctorController {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR')")
     @GetMapping("/{id}")
     public DoctorDTO getDoctor(@PathVariable Long id) {
 
@@ -47,6 +52,7 @@ public class DoctorController {
         return DoctorMapper.toDTO(doctor);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public DoctorDTO updateDoctor(@PathVariable Long id,
                                     @Valid @RequestBody DoctorDTO dto) {
@@ -58,6 +64,7 @@ public class DoctorController {
         return DoctorMapper.toDTO(updated);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);
